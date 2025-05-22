@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Shortener</title>
+    <!-- Bootstrap CSS CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-light">
+    <div class="container py-5">
+      <h1 class="text-center mb-4">URL Shortener</h1>
+
+      <!-- Form Section -->
+      <form
+        action="/shorturl"
+        method="POST"
+        class="card p-4 shadow-sm mx-auto"
+        style="max-width: 500px"
+      >
+        <div class="mb-3">
+          <label for="Fullurl" class="form-label">URL</label>
+          <input
+            type="url"
+            name="Fullurl"
+            id="Fullurl"
+            class="form-control"
+            placeholder="Enter URL"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Shorten</button>
+      </form>
+
+      <!-- Table Section -->
+      <div class="table-responsive mt-5">
+        <table
+          class="table table-bordered table-hover text-center align-middle bg-white shadow-sm"
+        >
+          <thead class="table-primary">
+            <tr>
+              <th>Full URL</th>
+              <th>Short URL</th>
+              <th>Clicks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% shortUrls.forEach(shortUrl => {%>
+              <tr>
+              <td>
+                <a href="<%= shortUrl.Full %>" target="_blank"
+                  ><%= shortUrl.Full %></a
+                >
+              </td>
+              <td>
+                <a href="<%= shortUrl.short %>" target="_blank"><%= shortUrl.Short %></a>
+              </td>
+              <td><%= shortUrl.clicks %></td>
+            </tr>
+            <%}) %>
+            <tr>
+              <td colspan="3">No additional links yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS (optional, for components like modals etc.) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
