@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: url-shortener
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: MONGO_URI
+        fromSecret: MONGO_URI_SECRET
