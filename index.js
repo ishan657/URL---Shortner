@@ -1,48 +1,45 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const shortid = require("shortid");
 const ShortURL = require("./models/schema");
+require("dotenv").config();
 
 app.set("view engine", "ejs");
-mongoose.connect("mongodb://localhost/urlShortener");
 app.use(express.urlencoded({ extended: false }));
 
-// Get all short URLs
+// ✅ Only one mongoose.connect with properly read .env value
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
+
+// GET: Homepage
 app.get("/", async (req, res) => {
   const shortUrls = await ShortURL.find();
   res.render("index", { shortUrls: shortUrls });
 });
 
-// Create a new short URL
-function generateShortCode(length = 6) {
-  return Math.random()
-    .toString(36)
-    .substring(2, 2 + length);
-}
-
-// Create a new short URL
+// POST: Create Short URL
 app.post("/shorturl", async (req, res) => {
-  const shortCode = generateShortCode();
+  const shortCode = shortid.generate(); // generate unique short code
   await ShortURL.create({
     Full: req.body.Fullurl,
-    Short: shortCode, // Save the generated short code
-    clicks: 0,
+    Short: shortCode,
   });
   res.redirect("/");
 });
 
-// Redirect using short URL
+// GET: Redirect from short URL
 app.get("/:shortUrl", async (req, res) => {
-  const shortUrls = await ShortURL.findOne({
-    Short: req.params.shortUrl,
-  });
-  if (shortUrls == null) return res.sendStatus(404);
+  const shortUrl = await ShortURL.findOne({ Short: req.params.shortUrl });
+  if (!shortUrl) return res.sendStatus(404);
 
-  shortUrls.clicks++;
-  await shortUrls.save();
-  res.redirect(shortUrls.Full);
+  shortUrl.clicks++;
+  await shortUrl.save();
+  res.redirect(shortUrl.Full);
 });
 
 app.listen(8000, () => {
-  console.log("Server has successfully started on port 8000");
+  console.log("✅ Server started on http://localhost:8000");
 });
